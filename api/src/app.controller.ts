@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { Client, ClientProxy, Transport } from '@nestjs/microservices';
 import { MessageCode } from '../../common/enums/message-code.enum';
 import { CreateOrderDto } from '../../common/dto/order/create-order.dto';
@@ -15,16 +15,18 @@ export class AppController {
   })
   private orderClient: ClientProxy;
 
-  @Get('order/:id')
+  @Get('orders/:id')
   public async getOrder(@Param('id') id: number): Promise<Order> {
-    const pattern = { cmd: MessageCode.GET_ORDER };
-    const data = { id };
-
-    return this.orderClient.send<Order>(pattern, data).toPromise();
+    return this.orderClient.send<Order>(MessageCode.GET_ORDER, { id }).toPromise();
   }
 
-  @Post('order')
+  @Post('orders')
   public async createOrder(@Body() data: CreateOrderDto): Promise<Order> {
-    return this.orderClient.send<Order>({ cmd: MessageCode.CREATE_ORDER }, data).toPromise();
+    return this.orderClient.send<Order>(MessageCode.CREATE_ORDER, data).toPromise();
+  }
+
+  @Patch('orders/:id/cancel')
+  public async cancelOrder(@Param('id') id: number): Promise<void> {
+    return this.orderClient.send<void>(MessageCode.CANCEL_ORDER, { id }).toPromise();
   }
 }

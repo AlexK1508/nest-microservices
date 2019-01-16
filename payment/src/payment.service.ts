@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 
 import { Payment } from './payment.entity';
 import { Order } from '../../order/src/order.entity';
+import { Observable, Subject } from 'rxjs';
+import { PaymentStatus } from '../../common/enums/payment-status.enum';
 
 @Injectable()
 export class PaymentService {
@@ -12,8 +14,27 @@ export class PaymentService {
     private readonly paymentRepository: Repository<Payment>,
   ) {}
 
-  async create(data: Order): Promise<Payment> {
-    return this.paymentRepository.save({ orderId: data.id });
+  create(data: Order): Observable<Payment> {
+    const res = new Subject<Payment>();
+    this.paymentRepository.save({ orderId: data.id })
+      .then(payment => {
+        res.next(payment);
+
+        setTimeout(async () => {
+          // TODO set random status
+          const updatedPayment = await this.updateStatus(payment.id, PaymentStatus.CONFIRMED);
+          res.next(updatedPayment);
+        }, 500)
+      })
+      .catch(e => {
+        res.error(e);
+      });
+
+    return res.asObservable();
   }
 
+  public async updateStatus(id: number, status: PaymentStatus): Promise<Payment> {
+    await this.paymentRepository.update(id, { status });
+    return this.paymentRepository.findOne(id);
+  }
 }
