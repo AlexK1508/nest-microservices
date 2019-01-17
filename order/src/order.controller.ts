@@ -28,6 +28,7 @@ export class OrderController {
   @MessagePattern(MessageCode.CREATE_ORDER)
   async create(data: CreateOrderDto): Promise<Order> {
     const order = await this.orderService.create(data);
+
     this.PaymentClient.send<any>(MessageCode.CREATE_PAYMENT, order).subscribe(
       (payment: any) => {
         switch (payment.status) {
@@ -45,5 +46,10 @@ export class OrderController {
     );
 
     return order;
+  }
+
+  @MessagePattern(MessageCode.CANCEL_ORDER)
+  async cancel(data: { id: number }): Promise<void> {
+    await this.orderService.updateStatus(data.id, OrderStatus.CANCELED);
   }
 }
