@@ -20,7 +20,8 @@ export class PaymentService {
         res.next(payment);
 
         setTimeout(async () => {
-          const updatedPayment = await this.updateStatus(payment.id, PaymentStatus.CONFIRMED);
+          const status: PaymentStatus = Math.random() > 0.5 ? PaymentStatus.CONFIRMED : PaymentStatus.DECLINED;
+          const updatedPayment = await this.updateStatus(payment.id, status);
           res.next(updatedPayment);
         }, 500);
       })
