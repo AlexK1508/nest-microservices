@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, OnModuleInit } from '@nestjs/common';
 import { Client, ClientProxy, MessagePattern, Transport } from '@nestjs/microservices';
 import { MessageCode } from './common/enums/message-code.enum';
 import { Order } from './order.entity';
@@ -12,7 +12,9 @@ export class OrderController {
   @Client({
     transport: Transport.REDIS,
     options: {
-      url: 'redis://localhost:6385',
+      url: 'redis://redis:6379',
+      retryAttempts: 5,
+      retryDelay: 5000,
     },
   })
   private readonly PaymentClient: ClientProxy;
@@ -20,7 +22,7 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) { }
 
   @MessagePattern(MessageCode.GET_ORDER)
-  get(data: { id: number }): Promise<Order> {
+  async get(data: { id: number }): Promise<Order> {
     return this.orderService.getById(data.id);
   }
 

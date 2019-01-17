@@ -1,16 +1,14 @@
-version: '3'
+version: "3"
 
 services:
 
   redis:
     image: redis
+    hostname: redis
     ports:
-      - '6385:6379'
-    expose:
-      - '6385'
+      - "6379:6379"
     networks:
       - shop
-
 
   db:
     container_name: shop_db
@@ -23,8 +21,6 @@ services:
       - .env
     ports:
       - "3306:3306"
-    expose:
-      - "3306"
     networks:
       - shop
 
@@ -41,8 +37,6 @@ services:
     links:
       - redis
     tty: true
-    expose:
-      - "4000"
     depends_on:
       - redis
       - order

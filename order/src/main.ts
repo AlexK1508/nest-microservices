@@ -3,11 +3,12 @@ import { OrderModule } from './order.module';
 import { Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
-  const { ORDER_PORT, DEFAULT_HOST } = process.env;
   const app = await NestFactory.createMicroservice(OrderModule, {
     transport: Transport.REDIS,
     options: {
-      url: 'redis://localhost:6385',
+      url: 'redis://redis:6379',
+      retryAttempts: 5,
+      retryDelay: 5000,
     },
   });
 

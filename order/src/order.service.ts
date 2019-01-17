@@ -13,7 +13,7 @@ export class OrderService {
   ) {}
 
   public async getById(id: number): Promise<Order> {
-    return this.orderRepository.findOneOrFail(id);
+    return this.orderRepository.findOne(id);
   }
 
   public async create(data: CreateOrderDto): Promise<Order> {
