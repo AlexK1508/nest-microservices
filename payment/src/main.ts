@@ -4,15 +4,12 @@ import { Transport } from '@nestjs/microservices';
 import { PaymentModule } from './payment.module';
 
 async function bootstrap() {
-  const { PAYMENT_PORT, DEFAULT_HOST } = process.env; 
+  const { PAYMENT_PORT, DEFAULT_HOST } = process.env;
   const app = await NestFactory.createMicroservice(PaymentModule, {
-    transport: Transport.TCP,
+    transport: Transport.REDIS,
     options: {
-      retryAttempts: 5,
-      retryDelay: 3000,
-      port: parseInt(PAYMENT_PORT, 10) || 4003,
-      host: DEFAULT_HOST || '0.0.0.0',
-      name: 'PaymentService',
+      url: `redis://localhost:6385`,
+
     },
   });
   app.listen(() => console.log('Payment microservice is listening'));

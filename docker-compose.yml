@@ -2,6 +2,16 @@ version: '3'
 
 services:
 
+  redis:
+    image: redis
+    ports:
+      - '6385:6379'
+    expose:
+      - '6385'
+    networks:
+      - shop
+
+
   db:
     container_name: shop_db
     hostname: shop_db
@@ -21,64 +31,65 @@ services:
   api:
     container_name: api
     hostname: api
-    build: 
+    build:
       context: ./api
       dockerfile: Dockerfile
     volumes:
       - .:/api
     ports:
       - "4000:4000"
-      - "4001:4001"
-      - "9222:9222"
+    links:
+      - redis
     tty: true
-    networks:
-      - shop
     expose:
       - "4000"
     depends_on:
+      - redis
       - order
       - payment
+    networks:
+      - shop
 
   order:
     container_name: order
     hostname: order
-    build: 
+    build:
       context: ./order
       dockerfile: Dockerfile
     env_file:
       - .env
     volumes:
       - .:/order
-    tty: true
-    networks:
-      - shop
-    ports:
-      - "4002:4002"
+    links:
+      - redis
     depends_on:
+      - redis
       - db
       - payment
+    networks:
+      - shop
 
   payment:
     container_name: payment
     hostname: payment
-    build: 
+    build:
       context: ./payment
       dockerfile: Dockerfile
     env_file:
       - .env
     volumes:
       - .:/payment
-    tty: true
+    links:
+      - redis
+    depends_on:
+      - redis
+      - db
     networks:
       - shop
-    ports:
-      - "4003:4003"
-    depends_on:
-      - db
 
 volumes:
   nest_example_data:
 
-networks: 
+networks:
   shop:
     driver: bridge

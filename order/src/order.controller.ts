@@ -10,10 +10,9 @@ import { PaymentStatus } from './common/enums/payment-status.enum';
 @Controller()
 export class OrderController {
   @Client({
-    transport: Transport.TCP,
+    transport: Transport.REDIS,
     options: {
-      host: process.env.DEFAULT_HOST || '0.0.0.0',
-      port: parseInt(process.env.PAYMENT_PORT, 10) || 4003,
+      url: 'redis://localhost:6385',
     },
   })
   private readonly PaymentClient: ClientProxy;

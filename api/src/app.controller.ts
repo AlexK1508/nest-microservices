@@ -7,10 +7,9 @@ import { CreateOrderDto } from './common/dto/order/create-order.dto';
 @Controller()
 export class AppController {
   @Client({
-    transport: Transport.TCP,
+    transport: Transport.REDIS,
     options: {
-      host: process.env.DEFAULT_HOST || '0.0.0.0',
-      port: parseInt(process.env.ORDER_PORT, 10) || 4002,
+      url: 'redis://localhost:6385',
     },
   })
   private orderClient: ClientProxy;
