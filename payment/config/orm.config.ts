@@ -20,5 +20,5 @@ export const ORM_CONFIG: ConnectionOptions = {
   database: MYSQL_DATABASE,
   entities: [`${__dirname}/../**/*.entity.ts`],
   synchronize: true,
-  logging: true,
+  logging: false,
 };

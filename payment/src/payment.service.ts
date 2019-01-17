@@ -3,9 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
 import { Payment } from './payment.entity';
-import { Order } from '../../order/src/order.entity';
 import { Observable, Subject } from 'rxjs';
-import { PaymentStatus } from '../../common/enums/payment-status.enum';
+import { PaymentStatus } from './common/enums/payment-status.enum';
 
 @Injectable()
 export class PaymentService {
@@ -14,17 +13,16 @@ export class PaymentService {
     private readonly paymentRepository: Repository<Payment>,
   ) {}
 
-  create(data: Order): Observable<Payment> {
+  create(data: any): Observable<Payment> {
     const res = new Subject<Payment>();
     this.paymentRepository.save({ orderId: data.id })
       .then(payment => {
         res.next(payment);
 
         setTimeout(async () => {
-          // TODO set random status
           const updatedPayment = await this.updateStatus(payment.id, PaymentStatus.CONFIRMED);
           res.next(updatedPayment);
-        }, 500)
+        }, 500);
       })
       .catch(e => {
         res.error(e);

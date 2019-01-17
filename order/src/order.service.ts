@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './order.entity';
 import { Repository } from 'typeorm';
-import { CreateOrderDto } from '../../common/dto/order/create-order.dto';
-import { OrderStatus } from '../../common/enums/order-status.enum';
+import { CreateOrderDto } from './common/dto/order/create-order.dto';
+import { OrderStatus } from './common/enums/order-status.enum';
 
 @Injectable()
 export class OrderService {
@@ -24,9 +24,9 @@ export class OrderService {
     await this.orderRepository.update(id, { status });
 
     if (status === OrderStatus.CONFIRMED) {
-      setTimeout(async() => {
+      setTimeout(async () => {
         await this.orderRepository.update(id, { status: OrderStatus.DELIVERED });
-      }, 1000)
+      }, 1000);
     }
   }
 }

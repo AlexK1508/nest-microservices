@@ -1,8 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { MessagePattern } from '@nestjs/microservices';
-import { MessageCode } from '../../common/enums/message-code.enum';
-import { Order } from '../../order/src/order.entity';
+import { MessageCode } from './common/enums/message-code.enum';
 import { Payment } from './payment.entity';
 import { Observable } from 'rxjs';
 
@@ -11,7 +10,7 @@ export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
   @MessagePattern(MessageCode.CREATE_PAYMENT)
-  create(data: Order): Observable<Payment> {
+  create(data: any): Observable<Payment> {
     return this.paymentService.create(data);
   }
 }
